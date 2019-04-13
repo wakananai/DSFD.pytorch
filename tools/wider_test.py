@@ -32,7 +32,7 @@ parser.add_argument('--network',
                     help='model for training')
 parser.add_argument('--model',
                     type=str,
-                    default='weights/dsfd_face.pth', help='trained model')
+                    default='weights/dsfd_vgg_0.880.pth', help='trained model')
 parser.add_argument('--thresh', default=0.05, type=float,
                     help='Final confidence threshold')
 args = parser.parse_args()
@@ -196,13 +196,19 @@ if __name__ == '__main__':
 
     for index, event in enumerate(event_list):
         filelist = file_list[index][0]
-        path = os.path.join(save_path, event[0][0].encode('utf-8'))
+        # print(event[0][0].encode('utf-8').decode('utf-8'))
+        # print(event[0][0])
+        # print(save_path)
+        path = os.path.join(save_path, event[0][0])
         if not os.path.exists(path):
             os.makedirs(path)
 
         for num, file in enumerate(filelist):
-            im_name = file[0][0].encode('utf-8')
+            im_name = file[0][0].encode('utf-8').decode('utf-8')
+            print(im_name)
+            print(event[0][0])
             in_file = os.path.join(imgs_path, event[0][0], im_name[:] + '.jpg')
+            print(in_file)
             #img = cv2.imread(in_file)
             img = Image.open(in_file)
             if img.mode == 'L':
@@ -228,11 +234,10 @@ if __name__ == '__main__':
             print('Detect %04d th image costs %.4f' % (counter, t2 - t1))
 
             fout = open(osp.join(save_path, event[0][
-                        0].encode('utf-8'), im_name + '.txt'), 'w')
-            fout.write('{:s}\n'.format(event[0][0].encode(
-                'utf-8') + '/' + im_name + '.jpg'))
+                        0], im_name + '.txt'), 'w')
+            fout.write('{:s}\n'.format(event[0][0] + '/' + im_name + '.jpg'))
             fout.write('{:d}\n'.format(dets.shape[0]))
-            for i in xrange(dets.shape[0]):
+            for i in range(dets.shape[0]):
                 xmin = dets[i][0]
                 ymin = dets[i][1]
                 xmax = dets[i][2]

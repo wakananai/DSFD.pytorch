@@ -30,7 +30,7 @@ class WIDERDetection(data.Dataset):
             num_faces = int(line[1])
             box = []
             label = []
-            for i in xrange(num_faces):
+            for i in range(num_faces):
                 x = float(line[2 + 5 * i])
                 y = float(line[3 + 5 * i])
                 w = float(line[4 + 5 * i])
@@ -75,11 +75,11 @@ class WIDERDetection(data.Dataset):
 
                 assert (target[:, 2] > target[:, 0]).any()
                 assert (target[:, 3] > target[:, 1]).any()
-                break 
+                break
             else:
                 index = random.randrange(0, self.num_samples)
 
-        
+
         #img = Image.fromarray(img)
         '''
         draw = ImageDraw.Draw(img)
@@ -91,7 +91,7 @@ class WIDERDetection(data.Dataset):
         img.save('image.jpg')
         '''
         return torch.from_numpy(img), target, im_height, im_width
-        
+
 
     def annotransform(self, boxes, im_width, im_height):
         boxes[:, 0] /= im_width

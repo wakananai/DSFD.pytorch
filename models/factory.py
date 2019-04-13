@@ -28,7 +28,8 @@ def build_net(phase, num_classes=2, model='vgg'):
 
 def basenet_factory(model='vgg'):
 	if model=='vgg':
-		basenet = 'vgg16_reducedfc.pth'
+		# basenet = 'vgg16_reducedfc.pth'
+		basenet = 'dsfd_vgg_0.880.pth'
 
 	elif 'resnet' in model:
 		basenet = '{}.pth'.format(model)

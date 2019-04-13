@@ -12,14 +12,16 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.init as init
 import torch.utils.data as data
+import torch.backends.cudnn as cudnn
 import numpy as np
 from torch.autograd import Variable
-import torch.backends.cudnn as cudnn
+from tensorboardX import SummaryWriter
 
 from data.config import cfg
 from layers.modules import MultiBoxLoss
 from data.widerface import WIDERDetection, detection_collate
 from models.factory import build_net, basenet_factory
+LOG_DIR = '/home/master/07/biolin/logs'
 
 parser = argparse.ArgumentParser(
     description='DSFD face Detector Training With Pytorch')
@@ -58,7 +60,15 @@ parser.add_argument('--multigpu',
 parser.add_argument('--save_folder',
                     default='weights/',
                     help='Directory for saving checkpoint models')
+# Log settings
+parser.add_argument('--log', default=LOG_DIR, type=str)
+parser.add_argument('--comment', default='', type=str)
+#Training Settings
 args = parser.parse_args()
+writer = SummaryWriter(os.path.join(args.log, 'DSFD/exp-origin' + args.comment))
+mdl_ex_path = os.path.join(args.save_folder, 'epoches')
+if not os.path.exists(mdl_ex_path):
+    os.makedirs(mdl_ex_path)
 
 if not args.multigpu:
     os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
@@ -117,7 +127,7 @@ def train():
         base_weights = torch.load(args.save_folder + basenet)
         print('Load base network {}'.format(args.save_folder + basenet))
         if args.model == 'vgg':
-            net.vgg.load_state_dict(base_weights)
+            net.vgg.load_state_dict(base_weights, strict=False)
         else:
             net.resnet.load_state_dict(base_weights)
 
@@ -181,6 +191,7 @@ def train():
 
             if iteration % 10 == 0:
                 tloss = losses / (batch_idx + 1)
+                writer.add_scalar('DSFD/trainLoss', tloss, iteration)
                 print('Timer: %.4f' % (t1 - t0))
                 print('epoch:' + repr(epoch) + ' || iter:' +
                       repr(iteration) + ' || Loss:%.4f' % (tloss))
@@ -190,12 +201,12 @@ def train():
                     loss_c_pal2.data[0], loss_l_pa12.data[0]))
                 print('->>lr:{}'.format(optimizer.param_groups[0]['lr']))
 
-            if iteration != 0 and iteration % 5000 == 0:
-                print('Saving state, iter:', iteration)
-                file = 'dsfd_' + repr(iteration) + '.pth'
-                torch.save(dsfd_net.state_dict(),
-                           os.path.join(save_folder, file))
             iteration += 1
+        if epoch != 0 and epoch % 10 == 0:
+            print('Saving state, epoch:', epoch)
+            file = 'dsfd_' + args.comment + '_' + repr(epoch) + '.pth'
+            torch.save(dsfd_net.state_dict(),
+                       os.path.join(mdl_ex_path, file))
 
         val(epoch, net, dsfd_net, criterion)
         if iteration == cfg.MAX_STEPS:
@@ -203,43 +214,45 @@ def train():
 
 
 def val(epoch, net, dsfd_net, criterion):
-    net.eval()
-    step = 0
-    losses = 0
-    t1 = time.time()
-    for batch_idx, (images, targets) in enumerate(val_loader):
-        if args.cuda:
-            images = Variable(images.cuda())
-            targets = [Variable(ann.cuda(), volatile=True)
-                       for ann in targets]
-        else:
-            images = Variable(images)
-            targets = [Variable(ann, volatile=True) for ann in targets]
+    with torch.set_grad_enabled(False):
+        net.eval()
+        step = 0
+        losses = 0
+        t1 = time.time()
+        for batch_idx, (images, targets) in enumerate(val_loader):
+            if args.cuda:
+                images = Variable(images.cuda())
+                targets = [Variable(ann.cuda(), volatile=True)
+                           for ann in targets]
+            else:
+                images = Variable(images)
+                targets = [Variable(ann, volatile=True) for ann in targets]
 
-        out = net(images)
-        loss_l_pa1l, loss_c_pal1 = criterion(out[:3], targets)
-        loss_l_pa12, loss_c_pal2 = criterion(out[3:], targets)
-        loss = loss_l_pa12 + loss_c_pal2
-        losses += loss.data[0]
-        step += 1
+            out = net(images)
+            loss_l_pa1l, loss_c_pal1 = criterion(out[:3], targets)
+            loss_l_pa12, loss_c_pal2 = criterion(out[3:], targets)
+            loss = loss_l_pa12 + loss_c_pal2
+            losses += loss.data[0]
+            step += 1
 
-    tloss = losses / step
-    t2 = time.time()
-    print('Timer: %.4f' % (t2 - t1))
-    print('test epoch:' + repr(epoch) + ' || Loss:%.4f' % (tloss))
+        tloss = losses / step
+        t2 = time.time()
+        print('Timer: %.4f' % (t2 - t1))
+        print('test epoch:' + repr(epoch) + ' || Loss:%.4f' % (tloss))
+        writer.add_scalar('DSFD/valLoss', tloss, iteration)
 
-    global min_loss
-    if tloss < min_loss:
-        print('Saving best state,epoch', epoch)
-        torch.save(dsfd_net.state_dict(), os.path.join(
-            save_folder, 'dsfd.pth'))
-        min_loss = tloss
+        global min_loss
+        if tloss < min_loss:
+            print('Saving best state,epoch', epoch)
+            torch.save(dsfd_net.state_dict(), os.path.join(
+                save_folder, 'dsfd_' + args.comment + '_bestLoss' + repr(tloss)+ '.pth'))
+            min_loss = tloss
 
-    states = {
-        'epoch': epoch,
-        'weight': dsfd_net.state_dict(),
-    }
-    torch.save(states, os.path.join(save_folder, 'dsfd_checkpoint.pth'))
+        states = {
+            'epoch': epoch,
+            'weight': dsfd_net.state_dict(),
+        }
+        torch.save(states, os.path.join(save_folder, 'dsfd_checkpoint.pth'))
 
 
 def adjust_learning_rate(optimizer, gamma, step):
