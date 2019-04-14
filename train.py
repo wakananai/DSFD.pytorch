@@ -21,7 +21,9 @@ from data.config import cfg
 from layers.modules import MultiBoxLoss
 from data.widerface import WIDERDetection, detection_collate
 from models.factory import build_net, basenet_factory
-LOG_DIR = '/home/master/07/biolin/logs'
+
+LOG_DIR = os.environ['TF_LOG_DIR']
+print('>>> LOG_DIR=%s' % LOG_DIR)
 
 parser = argparse.ArgumentParser(
     description='DSFD face Detector Training With Pytorch')
@@ -239,7 +241,7 @@ def val(epoch, net, dsfd_net, criterion):
         t2 = time.time()
         print('Timer: %.4f' % (t2 - t1))
         print('test epoch:' + repr(epoch) + ' || Loss:%.4f' % (tloss))
-        writer.add_scalar('DSFD/valLoss', tloss, iteration)
+        writer.add_scalar('DSFD/valLoss', tloss, epoch)
 
         global min_loss
         if tloss < min_loss:
