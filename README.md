@@ -21,11 +21,16 @@ I'm using resnet50/resnet101 to train DSFD,the result will be published later on
 * numpy 
 * easydict
 
-### Prepare data 
+### Prepare data for WIDER
+
 1. download WIDER face dataset
 2. modify data/config.py 
 3. ``` python prepare_wider_data.py```
 
+### Prepare data for  DarkFace
+1. download DarkFace face dataset
+2. modify Modify _C.HOME in data/config.py a
+3. ``` python prepare_wider_data.py```
 
 ### Train 
 ``` 

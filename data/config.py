@@ -60,7 +60,7 @@ _C.NEG_POS_RATIOS = 3
 _C.NUM_CLASSES = 2
 
 # dataset config
-_C.HOME = '/tmp2/biolin/cvprw_llfd'
+_C.HOME = '/tmp3/biolin/cvprw_llfd'
 
 
 # face config
@@ -68,9 +68,9 @@ _C.FACE = EasyDict()
 _C.FACE.TRAIN_FILE = './data/face_train.txt'
 _C.FACE.VAL_FILE = './data/face_val.txt'
 # _C.FACE.FDDB_DIR = '/home/lijun/data/FDDB'
-_C.FACE.FDDB_DIR = '/tmp2/biolin/cvprw_llfd/FDDB'
+_C.FACE.FDDB_DIR = '/tmp3/biolin/cvprw_llfd/FDDB'
 # _C.FACE.WIDER_DIR = '/home/lijun/data/WIDER'
-_C.FACE.WIDER_DIR = '/tmp2/biolin/cvprw_llfd/WIDER'
+_C.FACE.WIDER_DIR = '/tmp3/biolin/cvprw_llfd/WIDER'
 _C.FACE.AFW_DIR = '/home/lijun/data/AFW'
 _C.FACE.PASCAL_DIR = '/home/lijun/data/PASCAL_FACE'
 _C.FACE.OVERLAP_THRESH = 0.35

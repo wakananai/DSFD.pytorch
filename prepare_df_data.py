@@ -19,18 +19,16 @@ import cv2
 # WIDER_VAL = os.path.join(WIDER_ROOT, 'WIDER_val', 'images')
 
 
-WIDER_ROOT = os.path.join(cfg.HOME, 'DarkFace_Train')
-train_list_file = os.path.join(WIDER_ROOT, 'df_wider_face_train_bbx_gt.txt')
-val_list_file = os.path.join(WIDER_ROOT, 'df_wider_face_val_bbx_gt.txt')
+DARKFACE_ROOT = os.path.join(cfg.HOME, 'DarkFace_Train')
+train_list_file = os.path.join(DARKFACE_ROOT, 'df_wider_face_train_bbx_gt.txt')
+val_list_file = os.path.join(DARKFACE_ROOT, 'df_wider_face_val_bbx_gt.txt')
 
-WIDER_TRAIN = os.path.join(WIDER_ROOT, 'images')
-WIDER_VAL = os.path.join(WIDER_ROOT, 'images')
+DARKFACE_TRAIN = os.path.join(DARKFACE_ROOT, 'images')
+DARKFACE_VAL = os.path.join(DARKFACE_ROOT, 'images')
 
 
 # def parse_wider_file(root, file):
 def parse_df_file(root, file):
-    print('>>> In parse_df_file()')
-    print(file)
     with open(file, 'r') as fr:
         lines = fr.readlines()
     face_count = []
@@ -71,9 +69,7 @@ def parse_df_file(root, file):
 
 
 def df_data_file():
-    img_paths, bbox = parse_df_file(WIDER_TRAIN, train_list_file)
-    print(img_paths)
-    print(bbox)
+    img_paths, bbox = parse_df_file(DARKFACE_TRAIN, train_list_file)
     fw = open(cfg.FACE.TRAIN_FILE, 'w')
     for index in range(len(img_paths)):
         path = img_paths[index]
@@ -86,7 +82,7 @@ def df_data_file():
         fw.write('\n')
     fw.close()
 
-    img_paths, bbox = parse_df_file(WIDER_VAL, val_list_file)
+    img_paths, bbox = parse_df_file(DARKFACE_VAL, val_list_file)
     fw = open(cfg.FACE.VAL_FILE, 'w')
     for index in range(len(img_paths)):
         path = img_paths[index]
