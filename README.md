@@ -35,7 +35,7 @@ I'm using resnet50/resnet101 to train DSFD,the result will be published later on
    `df_wider_face_val_bbx_gt.txt`
    `df_wider_face_test_bbx_gt.txt`
    under your _C.HOME
-3. ``` python prepare_wider_data.py```
+3. ``` python prepare_df_data.py```
 
 ### Train 
 ``` 
