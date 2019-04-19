@@ -28,8 +28,13 @@ I'm using resnet50/resnet101 to train DSFD,the result will be published later on
 3. ``` python prepare_wider_data.py```
 
 ### Prepare data for  DarkFace
-1. download DarkFace face dataset
-2. modify Modify _C.HOME in data/config.py a
+1. Download DarkFace face dataset. 
+2. Modify _C.HOME in data/config.py
+   Make sure you have 
+   `df_wider_face_train_bbx_gt.txt`
+   `df_wider_face_val_bbx_gt.txt`
+   `df_wider_face_test_bbx_gt.txt`
+   under your _C.HOME
 3. ``` python prepare_wider_data.py```
 
 ### Train 
