@@ -1,4 +1,5 @@
 ## DSFD: Dual Shot Face Detector ##
+
 [A PyTorch Implementation of Dual Shot Face Detector](https://arxiv.org/abs/1810.10220?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+arxiv%2FQSXk+%28ExcitingAds%21+cs+updates+on+arXiv.org%29)
 
 ### Description
@@ -7,16 +8,16 @@ I use basenet [vgg](https://pan.baidu.com/s/1Q-YqoxJyqvln6KTcIck1tQ) to train DS
 | Easy MAP | Medium MAP	|  hard MAP |
 | ---------|------------| --------- |
 |	0.946  |    0.937   |  0.880    | 
- 
+
 the AP in AFW,PASCAL,FDDB as following:
 
 | 	AFW     |   PASCAL	|   FDDB   |
 | --------- |-----------| ---------|
 |	99.89   |    99.11  |  0.983   |
- 
+
 I'm using resnet50/resnet101 to train DSFD,the result will be published later on 
 ### Requirement
-* pytorch 0.3 
+*a pytorch 0.3 
 * opencv 
 * numpy 
 * easydict
@@ -30,18 +31,22 @@ I'm using resnet50/resnet101 to train DSFD,the result will be published later on
 ### Prepare data for  DarkFace
 1. Download DarkFace face dataset. 
 2. Modify _C.HOME in data/config.py
-   Make sure you have 
-   `df_wider_face_train_bbx_gt.txt`
-   `df_wider_face_val_bbx_gt.txt`
-   `df_wider_face_test_bbx_gt.txt`
-   under your _C.HOME
+Make sure you have 
+`df_wider_face_train_bbx_gt.txt`
+`df_wider_face_val_bbx_gt.txt`
+`df_wider_face_test_bbx_gt.txt`
+under your _C.HOME
 3. ``` python prepare_df_data.py```
 
-### Train 
+### Train
+You should
+```
+export TF_LOG_DIR=<your tensorboard log dir>
+```
 ``` 
 python train.py --batch_size 4 
-		--model vgg\resnet50\resnet101 
-		--lr 5e-4
+--model vgg\resnet50\resnet101 
+--lr 5e-4
 ``` 
 
 ### Evalution
