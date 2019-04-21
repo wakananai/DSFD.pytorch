@@ -60,7 +60,7 @@ _C.NEG_POS_RATIOS = 3
 _C.NUM_CLASSES = 2
 
 # dataset config
-_C.HOME = '/tmp3/biolin/cvprw_llfd'
+_C.HOME = '/workspace/lustre/cvprw_llfd'
 
 
 # face config

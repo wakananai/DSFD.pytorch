@@ -131,7 +131,7 @@ def train():
         if args.model == 'vgg':
             net.vgg.load_state_dict(base_weights, strict=False)
         else:
-            net.resnet.load_state_dict(base_weights)
+            net.resnet.load_state_dict(base_weights, strict=False)
 
     if args.cuda:
         if args.multigpu:
@@ -189,7 +189,7 @@ def train():
             loss.backward()
             optimizer.step()
             t1 = time.time()
-            losses += loss.data[0]
+            losses += loss.item()
 
             if iteration % 10 == 0:
                 tloss = losses / (batch_idx + 1)
@@ -198,9 +198,9 @@ def train():
                 print('epoch:' + repr(epoch) + ' || iter:' +
                       repr(iteration) + ' || Loss:%.4f' % (tloss))
                 print('->> pal1 conf loss:{:.4f} || pal1 loc loss:{:.4f}'.format(
-                    loss_c_pal1.data[0], loss_l_pa1l.data[0]))
+                    loss_c_pal1.item(), loss_l_pa1l.item()))
                 print('->> pal2 conf loss:{:.4f} || pal2 loc loss:{:.4f}'.format(
-                    loss_c_pal2.data[0], loss_l_pa12.data[0]))
+                    loss_c_pal2.item(), loss_l_pa12.item()))
                 print('->>lr:{}'.format(optimizer.param_groups[0]['lr']))
 
             iteration += 1
@@ -234,7 +234,7 @@ def val(epoch, net, dsfd_net, criterion):
             loss_l_pa1l, loss_c_pal1 = criterion(out[:3], targets)
             loss_l_pa12, loss_c_pal2 = criterion(out[3:], targets)
             loss = loss_l_pa12 + loss_c_pal2
-            losses += loss.data[0]
+            losses += loss.item()
             step += 1
 
         tloss = losses / step
